@@ -46,7 +46,7 @@ export class ConstEnumHandler {
   /**
    * @returns `[enumName,[key,value][]]`
    */
-  private parseConstEnums(src: string): [EnumName, KeyValueEntry[]][] {
+  static parseConstEnums(src: string): [EnumName, KeyValueEntry[]][] {
     const list: [EnumName, KeyValueEntry[]][] = [];
     let sublist: KeyValueEntry[] = [];
 
@@ -138,7 +138,7 @@ export class ConstEnumHandler {
       } catch {
         continue;
       }
-      list.push(...this.parseConstEnums(content));
+      list.push(...ConstEnumHandler.parseConstEnums(content));
     }
     return list;
   }
