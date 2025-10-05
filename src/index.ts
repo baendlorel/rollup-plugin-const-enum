@@ -35,16 +35,24 @@ export function constEnum(options?: Partial<RollupConstEnumOptions>) {
   const plugin: Plugin = {
     name: '__NAME__',
     transform(code, _id) {
-      if (map.size === 0) {
+      if (list.length === 0) {
         return null;
       }
 
-      let outCode = code;
-      for (let i = 0; i < replacers.length; i++) {
-        outCode = replaceAll(outCode, replacers[i][0], replacers[i][1]);
+      const prelist = list.filter((entry) => entry[0].test(code));
+      if (prelist.length === 0) {
+        return null;
       }
 
-      return outCode;
+      let output = code;
+      for (let i = 0; i < prelist.length; i++) {
+        const sublist = prelist[i][1];
+        for (let j = 0; j < sublist.length; j++) {
+          output = replaceAll(output, sublist[j][0], sublist[j][1]);
+        }
+      }
+
+      return output;
     },
   };
 

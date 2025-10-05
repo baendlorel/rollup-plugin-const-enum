@@ -2,9 +2,6 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { RollupConstEnumOptions } from './types/global.js';
 
-type KeyValueEntry = [string, string];
-type EnumName = RegExp;
-
 export class ConstEnumHandler {
   private readonly cwd = process.cwd();
   private readonly excludedDirs: string[];
@@ -51,7 +48,7 @@ export class ConstEnumHandler {
    */
   private parseConstEnums(src: string): [EnumName, KeyValueEntry[]][] {
     const list: [EnumName, KeyValueEntry[]][] = [];
-    let subList: KeyValueEntry[] = [];
+    let sublist: KeyValueEntry[] = [];
 
     // Remove CRLF to simplify
     const text = src.replace(/\r\n/g, '\n');
@@ -61,7 +58,7 @@ export class ConstEnumHandler {
       /(?:export\s+)?(?:declare\s+)?const\s+enum\s+([A-Za-z_$][\w$]*)\s*\{([\s\S]*?)\}/g;
     let m;
     while ((m = enumRe.exec(text)) !== null) {
-      subList = [];
+      sublist = [];
       const enumName = m[1];
       let body = m[2];
 
@@ -85,7 +82,7 @@ export class ConstEnumHandler {
             lastNumeric = 0;
           }
           value = String(lastNumeric);
-          subList.push([key, value]);
+          sublist.push([`${enumName}.${key}`, value]);
           continue;
         }
 
@@ -96,7 +93,7 @@ export class ConstEnumHandler {
           const inner = strMatch[2];
           value = JSON.stringify(inner);
           lastNumeric = null; // subsequent implicit members don't get numeric increments
-          subList.push([key, value]);
+          sublist.push([`${enumName}.${key}`, value]);
           continue;
         }
 
@@ -111,17 +108,17 @@ export class ConstEnumHandler {
           } else {
             lastNumeric = parsed;
           }
-          subList.push([key, value]);
+          sublist.push([`${enumName}.${key}`, value]);
           continue;
         }
 
         // Fallback: keep the original text as-is (could be reference or expression)
         value = valText;
         lastNumeric = null;
-        subList.push([key, value]);
+        sublist.push([`${enumName}.${key}`, value]);
       }
-      if (subList.length > 0) {
-        list.push([new RegExp(`\b${enumName}\.\b`), subList]);
+      if (sublist.length > 0) {
+        list.push([new RegExp(`\b${enumName}\.\b`), sublist]);
       }
     }
     return list;
