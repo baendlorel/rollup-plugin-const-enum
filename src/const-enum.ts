@@ -21,7 +21,7 @@ export class ConstEnumHandler {
     return files.filter((f) => fs.existsSync(f) && fs.statSync(f).isFile());
   }
 
-  collect(dir: string): string[] {
+  private collect(dir: string): string[] {
     const out: string[] = [];
     const entries = fs.readdirSync(dir, { withFileTypes: true });
 
@@ -43,7 +43,7 @@ export class ConstEnumHandler {
   }
 
   // todo 保存成enum的名字-> 这个enum的map 的map
-  parseConstEnums(src: string): Map<string, string> {
+  private parseConstEnums(src: string): Map<string, string> {
     const enumMap = new Map<string, Map<string, string>>();
 
     const map = new Map<string, string>();

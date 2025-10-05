@@ -2,7 +2,7 @@ import { Plugin } from 'rollup';
 import { RollupConstEnumOptions } from './types/global.js';
 
 import { normalize } from './options.js';
-import { buildConstEnumMap } from './const-enum.js';
+import { ConstEnumHandler } from './const-enum.js';
 
 const replaceAll =
   typeof String.prototype.replaceAll === 'function'
@@ -30,14 +30,12 @@ const replaceAll =
  */
 export function constEnum(options?: Partial<RollupConstEnumOptions>) {
   const opts = normalize(options);
-  const map = buildConstEnumMap(opts);
-  const replacers = Array.from(map.entries());
-  replacers.sort((a, b) => b[0].length - a[0].length); // longer first to avoid partial matches
+  const map = new ConstEnumHandler(opts).buildConstEnumMap();
 
   const plugin: Plugin = {
     name: '__NAME__',
     transform(code, _id) {
-      if (replacers.length === 0) {
+      if (map.size === 0) {
         return null;
       }
 
