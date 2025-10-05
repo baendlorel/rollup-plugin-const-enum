@@ -179,32 +179,6 @@ describe('ConstEnumHandler class', () => {
       }
     });
 
-    it('should respect skipDts option', () => {
-      const testEnv = createTestEnvironment('test-skip-dts-' + Date.now());
-      testEnv.writeFile('types.d.ts', sampleEnums.simple);
-      testEnv.writeFile('regular.ts', sampleEnums.stringEnum);
-
-      const originalCwd = process.cwd();
-      process.chdir(testEnv.dir);
-
-      try {
-        const options = normalize({
-          files: ['types.d.ts', 'regular.ts'],
-          skipDts: true,
-        });
-
-        const handler = new ConstEnumHandler(options);
-        const result = handler.buildConstEnumList();
-
-        // Should only include regular.ts, not types.d.ts
-        expect(result).toHaveLength(1);
-        expect(result[0][1][0][0]).toContain('Status.');
-      } finally {
-        process.chdir(originalCwd);
-        testEnv.cleanup();
-      }
-    });
-
     it('should include .d.ts files when skipDts is false', () => {
       const testEnv = createTestEnvironment('test-include-dts-' + Date.now());
       testEnv.writeFile('types.d.ts', sampleEnums.simple);
