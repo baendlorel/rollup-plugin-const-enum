@@ -54,6 +54,7 @@ const options = [
     ],
 
     plugins: [
+      typescript({ tsconfig }),
       alias(aliasOpts),
       replace({
         preventAssignment: false,
@@ -62,7 +63,6 @@ const options = [
       }),
       replace(replaceOpts),
       funcMacro(),
-      typescript({ tsconfig }),
       terser({
         format: {
           comments: false, // remove comments
