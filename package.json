@@ -1,6 +1,6 @@
 {
 	"name": "rollup-plugin-const-enum",
-	"version": "0.0.3",
+	"version": "0.0.4",
 	"author": {
 		"name": "Kasukabe Tsumugi",
 		"email": "futami16237@gmail.com"

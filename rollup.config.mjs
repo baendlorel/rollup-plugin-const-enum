@@ -63,7 +63,7 @@ const options = [
       }),
       replace(replaceOpts),
       funcMacro(),
-      terser({
+      void terser({
         format: {
           comments: false, // remove comments
         },
@@ -79,7 +79,7 @@ const options = [
           },
         },
       }),
-    ],
+    ].filter(Boolean),
     external: [],
   },
 ];
