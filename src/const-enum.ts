@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { RollupConstEnumOptions } from './types/global.js';
+import { stripComment } from './strip-comment.js';
 
 export class ConstEnumHandler {
   private readonly cwd = process.cwd();
@@ -62,8 +63,8 @@ export class ConstEnumHandler {
       const enumName = m[1];
       let body = m[2];
 
-      // strip block comments
-      body = body.replace(/\/\*[\s\S]*?\*\//g, '');
+      // strip comments (single-line and block) while preserving strings
+      body = stripComment(body);
 
       // We'll match members like: KEY = value,  or KEY,
       const memberRe = /([A-Za-z_$][\w$]*)\s*(?:=\s*([^,\n}]+))?,?/g;
