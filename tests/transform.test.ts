@@ -19,5 +19,63 @@ describe('ConstEnumHandler.parseConstEnums', () => {
 
   it('stringEnum', () => {
     const list = ConstEnumHandler.parseConstEnums(sampleEnums.stringEnum);
+    expect(list).toEqual([
+      [
+        new RegExp('\bStatus\.\b'),
+        [
+          ['Status.Active', '"active"'],
+          ['Status.Inactive', '"inactive"'],
+          ['Status.Pending', '"pending"'],
+        ],
+      ],
+    ]);
+  });
+
+  it('mixed', () => {
+    const list = ConstEnumHandler.parseConstEnums(sampleEnums.mixed);
+    expect(list).toEqual([
+      [
+        new RegExp('\bMixed\.\b'),
+        [
+          ['Mixed.A', '1'],
+          ['Mixed.B', '"string"'],
+          ['Mixed.C', '0x10'],
+          ['Mixed.D', '17'],
+        ],
+      ],
+    ]);
+  });
+
+  it('multiple', () => {
+    const list = ConstEnumHandler.parseConstEnums(sampleEnums.multiple);
+    expect(list).toEqual([
+      [
+        new RegExp('\bFirst\.\b'),
+        [
+          ['First.A', '1'],
+          ['First.B', '2'],
+        ],
+      ],
+      [
+        new RegExp('\bSecond\.\b'),
+        [
+          ['Second.X', '"x"'],
+          ['Second.Y', '"y"'],
+        ],
+      ],
+    ]);
+  });
+
+  it('withComments', () => {
+    const list = ConstEnumHandler.parseConstEnums(sampleEnums.withComments);
+    expect(list).toEqual([
+      [
+        new RegExp('\bStatus\.\b'),
+        [
+          ['Status.Active', '1'],
+          ['Status.Inactive', '0'],
+        ],
+      ],
+    ]);
   });
 });
