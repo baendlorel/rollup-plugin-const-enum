@@ -29,17 +29,14 @@ const replaceAll =
  * __PKG_INFO__
  */
 export function constEnum(options?: Partial<RollupConstEnumOptions>) {
-  const { include, constEnumInclude } = normalize(options);
-  const map = buildConstEnumMap(constEnumInclude);
+  const opts = normalize(options);
+  const map = buildConstEnumMap(opts);
   const replacers = Array.from(map.entries());
   replacers.sort((a, b) => b[0].length - a[0].length); // longer first to avoid partial matches
 
   const plugin: Plugin = {
     name: '__NAME__',
-    transform(code, id) {
-      if (!include(id)) {
-        return null;
-      }
+    transform(code, _id) {
       if (replacers.length === 0) {
         return null;
       }

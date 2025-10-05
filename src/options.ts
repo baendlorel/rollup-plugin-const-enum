@@ -1,26 +1,32 @@
-import { createFilter } from '@rollup/pluginutils';
 import { RollupConstEnumOptions } from './types/global.js';
 
-const DEFAULT_EXCLUDE = [
-  '**/*.d.ts',
-  '.git/**',
-  'test/**',
-  'tests/**',
-  'dist/**',
-  'node_modules/**',
-];
-const DEFAULT_INCLUDE = ['**/*.ts', '**/*.tsx', '**/*.mts', '**/*.cts'];
+const isStringArray = (value: any): value is string[] =>
+  Array.isArray(value) && value.every((v) => typeof v === 'string');
 
 export function normalize(options: Partial<RollupConstEnumOptions> = {}) {
   const {
-    constEnumInclude = DEFAULT_INCLUDE,
-    constEnumExclude = DEFAULT_EXCLUDE,
-    include = DEFAULT_INCLUDE,
-    exclude = DEFAULT_EXCLUDE,
+    suffixes = ['.ts', '.tsx', '.mts', '.cts'],
+    files = [],
+    excludedDirectories = ['.git', 'test', 'tests', 'dist', 'node_modules'],
+    skipDts = true,
   } = Object(options) as RollupConstEnumOptions;
 
+  if (!isStringArray(suffixes)) {
+    throw new TypeError(`Invalid option 'suffixes': expected an array of strings.`);
+  }
+
+  if (!isStringArray(files)) {
+    throw new TypeError(`Invalid option 'files': expected an array of strings.`);
+  }
+
+  if (!isStringArray(excludedDirectories)) {
+    throw new TypeError(`Invalid option 'excludedDirectories': expected an array of strings.`);
+  }
+
   return {
-    include: createFilter(include, exclude),
-    constEnumInclude: createFilter(constEnumInclude, constEnumExclude),
+    suffixes,
+    files,
+    excludedDirectories,
+    skipDts,
   };
 }

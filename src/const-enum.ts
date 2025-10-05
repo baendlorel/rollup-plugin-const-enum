@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import { RollupConstEnumOptions } from './types/global.js';
 
 /**
  * Recursively collect all .ts files under `dir`, skipping node_modules
@@ -105,7 +106,7 @@ function parseConstEnums(src: string): Map<string, string> {
 /**
  * Collect mappings from all ts files in the project
  */
-export function buildConstEnumMap(include: (id: string) => boolean): Map<string, string> {
+export function buildConstEnumMap(opts: RollupConstEnumOptions): Map<string, string> {
   const files = collectTsFiles(process.cwd(), include);
 
   const combined = new Map<string, string>();

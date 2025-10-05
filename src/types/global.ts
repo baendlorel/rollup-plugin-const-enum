@@ -1,25 +1,29 @@
 export interface RollupConstEnumOptions {
   /**
    * Which file to scan for const enums.
-   * - default: `['⋆⋆/⋆.ts', '⋆⋆/⋆.tsx', '⋆⋆/⋆.mts', '⋆⋆/⋆.cts']`
+   * - priority < `files`
+   * - default: `['.ts', '.tsx', '.mts', '.cts']`
    */
-  constEnumInclude: string[];
+  suffixes: string[];
 
   /**
-   * Which file not to scan for const enums.
-   * - default: `['⋆⋆/⋆.d.ts', '.git/⋆⋆', 'test/⋆⋆', 'tests/⋆⋆', 'dist/⋆⋆', 'node_modules/⋆⋆']`
+   * Skip `.d.ts` files while scanning.
+   * - default: `true`
    */
-  constEnumExclude: string[];
+  skipDts: boolean;
 
   /**
-   * Which file to inline the const enum values.
-   * - default: `['⋆⋆/⋆.ts', '⋆⋆/⋆.tsx', '⋆⋆/⋆.mts', '⋆⋆/⋆.cts']`
+   * Which file(full path) to scan for const enums.
+   * - **ignores `suffixes` while provided**
+   * - directly check `path.join(process.cwd(), file)`, should give the full path.
+   * - default: `[]` (disabled)
    */
-  include: string[];
+  files: string[];
 
   /**
-   * Which file not to inline the const enum values.
-   * - default: `['⋆⋆/⋆.d.ts', '.git/⋆⋆', 'test/⋆⋆', 'tests/⋆⋆', 'dist/⋆⋆', 'node_modules/⋆⋆']`
+   * Skip these directories(full path) while scanning.
+   * - directly check `path.join(process.cwd(), file)`, should give the full path.
+   * - default: `['.git', 'test', 'tests', 'dist', 'node_modules']`
    */
-  exclude: string[];
+  excludedDirectories: string[];
 }
