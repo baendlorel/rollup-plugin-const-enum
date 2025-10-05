@@ -34,7 +34,7 @@
 		"test": "clear & vitest",
 		"lint": "oxlint .",
 		"cover": "clear & vitest --coverage",
-		"build": "node ./.scripts/rollup.mjs"
+		"build": "tsx ./.scripts/rollup.ts"
 	},
 	"license": "MIT",
 	"devDependencies": {
