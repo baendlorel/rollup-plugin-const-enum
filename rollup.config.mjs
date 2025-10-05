@@ -9,7 +9,7 @@ import terser from '@rollup/plugin-terser';
 import replace from '@rollup/plugin-replace';
 import dts from 'rollup-plugin-dts';
 import funcMacro from 'rollup-plugin-func-macro';
-import constEnum from 'rollup-plugin-const-enum';
+import constEnum from './node_modules/rollup-plugin-const-enum/dist/index.mjs';
 
 // custom plugins
 import { replaceLiteralOpts, replaceOpts } from './.scripts/plugins/replace.mjs';

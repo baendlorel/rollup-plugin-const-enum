@@ -30,7 +30,7 @@ const replaceAll =
  */
 export default function constEnum(options?: Partial<RollupConstEnumOptions>) {
   const opts = normalize(options);
-  const list = new ConstEnumHandler(opts).buildConstEnumList();
+  const list = new ConstEnumHandler(opts).build();
 
   const plugin: Plugin = {
     name: '__NAME__',

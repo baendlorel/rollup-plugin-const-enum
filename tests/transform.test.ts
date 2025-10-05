@@ -4,7 +4,7 @@ import { sampleEnums } from './helpers.js';
 
 describe('ConstEnumHandler.parseConstEnums', () => {
   it('simple', () => {
-    const list = ConstEnumHandler.parseConstEnums(sampleEnums.simple);
+    const list = ConstEnumHandler.parse(sampleEnums.simple);
     expect(list).toEqual([
       [
         new RegExp('\\bColors.\\b'),
@@ -18,7 +18,7 @@ describe('ConstEnumHandler.parseConstEnums', () => {
   });
 
   it('stringEnum', () => {
-    const list = ConstEnumHandler.parseConstEnums(sampleEnums.stringEnum);
+    const list = ConstEnumHandler.parse(sampleEnums.stringEnum);
     expect(list).toEqual([
       [
         new RegExp('\\bStatus.\\b'),
@@ -32,7 +32,7 @@ describe('ConstEnumHandler.parseConstEnums', () => {
   });
 
   it('mixed', () => {
-    const list = ConstEnumHandler.parseConstEnums(sampleEnums.mixed);
+    const list = ConstEnumHandler.parse(sampleEnums.mixed);
     expect(list).toEqual([
       [
         new RegExp('\\bMixed.\\b'),
@@ -47,7 +47,7 @@ describe('ConstEnumHandler.parseConstEnums', () => {
   });
 
   it('multiple', () => {
-    const list = ConstEnumHandler.parseConstEnums(sampleEnums.multiple);
+    const list = ConstEnumHandler.parse(sampleEnums.multiple);
     expect(list).toEqual([
       [
         new RegExp('\\bFirst.\\b'),
@@ -67,7 +67,7 @@ describe('ConstEnumHandler.parseConstEnums', () => {
   });
 
   it('withComments', () => {
-    const list = ConstEnumHandler.parseConstEnums(sampleEnums.withComments);
+    const list = ConstEnumHandler.parse(sampleEnums.withComments);
     expect(list).toEqual([
       [
         new RegExp('\\bStatus.\\b'),
@@ -80,7 +80,7 @@ describe('ConstEnumHandler.parseConstEnums', () => {
   });
 
   it('error', () => {
-    const list = ConstEnumHandler.parseConstEnums(sampleEnums.error);
+    const list = ConstEnumHandler.parse(sampleEnums.error);
     expect(list).toEqual([
       [
         new RegExp('\\bStatus.\\b'),
@@ -93,7 +93,7 @@ describe('ConstEnumHandler.parseConstEnums', () => {
   });
 
   it('final', () => {
-    const list = ConstEnumHandler.parseConstEnums(sampleEnums.final);
+    const list = ConstEnumHandler.parse(sampleEnums.final);
     expect(list).toEqual([
       [
         new RegExp('\\bStatus.\\b'),

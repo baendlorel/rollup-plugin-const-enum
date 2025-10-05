@@ -11,11 +11,7 @@
  * even for tricky inputs (comments inside strings, sequences of '*' in block comments, etc.).
  */
 export function stripComment(constEnumBlock: string): string {
-  const s = constEnumBlock;
-  const len = s.length;
-  let out = '';
-
-  enum State {
+  const enum State {
     Normal,
     Slash,
     LineComment,
@@ -27,6 +23,9 @@ export function stripComment(constEnumBlock: string): string {
     BacktickEscape,
     StringEscape,
   }
+  const s = constEnumBlock;
+  const len = s.length;
+  let out = '';
 
   let state = State.Normal;
 

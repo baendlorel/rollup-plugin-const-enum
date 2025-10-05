@@ -1,7 +1,11 @@
 import { RollupConstEnumOptions } from './types/global.js';
 
-const isStringArray = (value: any): value is string[] =>
-  Array.isArray(value) && value.every((v) => typeof v === 'string');
+const expectStringArray = (value: any, name: string) => {
+  if (Array.isArray(value) && value.every((v) => typeof v === 'string')) {
+    return;
+  }
+  throw new TypeError(`Expected ${name} to be string[].`);
+};
 
 export function normalize(options: Partial<RollupConstEnumOptions> = {}) {
   const {
@@ -11,17 +15,9 @@ export function normalize(options: Partial<RollupConstEnumOptions> = {}) {
     skipDts = true,
   } = Object(options) as RollupConstEnumOptions;
 
-  if (!isStringArray(suffixes)) {
-    throw new TypeError(`Invalid option 'suffixes': expected an array of strings.`);
-  }
-
-  if (!isStringArray(files)) {
-    throw new TypeError(`Invalid option 'files': expected an array of strings.`);
-  }
-
-  if (!isStringArray(excludedDirectories)) {
-    throw new TypeError(`Invalid option 'excludedDirectories': expected an array of strings.`);
-  }
+  expectStringArray(suffixes, 'suffixes');
+  expectStringArray(files, 'files');
+  expectStringArray(excludedDirectories, 'excludedDirectories');
 
   return {
     suffixes,

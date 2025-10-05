@@ -1,41 +1,41 @@
-import fs from 'node:fs';
-import path from 'node:path';
+import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
+import { join } from 'node:path';
 import { RollupConstEnumOptions } from './types/global.js';
 import { stripComment } from './strip-comment.js';
 
 export class ConstEnumHandler {
-  private readonly cwd = process.cwd();
-  private readonly excludedDirs: string[];
-  constructor(private readonly options: RollupConstEnumOptions) {
-    this.excludedDirs = this.options.excludedDirectories.map((d) => path.join(this.cwd, d));
+  private readonly _cwd = process.cwd();
+  private readonly _excludedDirs: string[];
+  constructor(private readonly _options: RollupConstEnumOptions) {
+    this._excludedDirs = this._options.excludedDirectories.map((d) => join(this._cwd, d));
   }
 
-  private includeFile(s: string) {
-    if (this.options.skipDts && s.endsWith('.d.ts')) {
+  private _includeFile(s: string) {
+    if (this._options.skipDts && s.endsWith('.d.ts')) {
       return false;
     }
-    return this.options.suffixes.some((suffix) => s.endsWith(suffix));
+    return this._options.suffixes.some((suffix) => s.endsWith(suffix));
   }
 
-  private filesInOption() {
-    const files = this.options.files.map((f) => path.join(this.cwd, f));
-    return files.filter((f) => fs.existsSync(f) && fs.statSync(f).isFile());
+  private _filesInOption() {
+    const files = this._options.files.map((f) => join(this._cwd, f));
+    return files.filter((f) => existsSync(f) && statSync(f).isFile());
   }
 
-  private collect(dir: string): string[] {
+  private _collect(dir: string): string[] {
     const out: string[] = [];
-    const entries = fs.readdirSync(dir, { withFileTypes: true });
+    const entries = readdirSync(dir, { withFileTypes: true });
 
     for (let i = 0; i < entries.length; i++) {
       const e = entries[i];
-      const full = path.join(dir, e.name);
+      const full = join(dir, e.name);
       if (e.isDirectory()) {
-        if (this.excludedDirs.includes(full)) {
+        if (this._excludedDirs.includes(full)) {
           continue;
         }
-        out.push(...this.collect(full));
+        out.push(...this._collect(full));
       } else if (e.isFile()) {
-        if (this.includeFile(e.name)) {
+        if (this._includeFile(e.name)) {
           out.push(full);
         }
       }
@@ -46,7 +46,7 @@ export class ConstEnumHandler {
   /**
    * @returns `[enumName,[key,value][]]`
    */
-  static parseConstEnums(src: string): [EnumName, KeyValueEntry[]][] {
+  static parse(src: string): [EnumName, KeyValueEntry[]][] {
     const list: [EnumName, KeyValueEntry[]][] = [];
     let sublist: KeyValueEntry[] = [];
 
@@ -128,18 +128,18 @@ export class ConstEnumHandler {
   /**
    * Collect mappings from all ts files in the project
    */
-  buildConstEnumList(): [EnumName, KeyValueEntry[]][] {
-    const files = this.options.files.length > 0 ? this.filesInOption() : this.collect(this.cwd);
+  build(): [EnumName, KeyValueEntry[]][] {
+    const files = this._options.files.length > 0 ? this._filesInOption() : this._collect(this._cwd);
 
     const list: [EnumName, KeyValueEntry[]][] = [];
     for (let i = 0; i < files.length; i++) {
       let content = null;
       try {
-        content = fs.readFileSync(files[i], 'utf8');
+        content = readFileSync(files[i], 'utf8');
       } catch {
         continue;
       }
-      list.push(...ConstEnumHandler.parseConstEnums(content));
+      list.push(...ConstEnumHandler.parse(content));
     }
     return list;
   }

@@ -1,5 +1,4 @@
 import { expect, describe, it } from 'vitest';
-import path from 'node:path';
 import { ConstEnumHandler } from '../src/const-enum.js';
 import { normalize } from '../src/options.js';
 import { createTestEnvironment, sampleEnums } from './helpers.js';
@@ -19,7 +18,7 @@ describe('ConstEnumHandler class', () => {
         });
 
         const handler = new ConstEnumHandler(options);
-        const result = handler.buildConstEnumList();
+        const result = handler.build();
 
         expect(result).toHaveLength(1);
         expect(result[0][0]).toBeInstanceOf(RegExp);
@@ -47,7 +46,7 @@ describe('ConstEnumHandler class', () => {
         });
 
         const handler = new ConstEnumHandler(options);
-        const result = handler.buildConstEnumList();
+        const result = handler.build();
 
         expect(result).toHaveLength(1);
         expect(result[0][1]).toEqual([
@@ -74,7 +73,7 @@ describe('ConstEnumHandler class', () => {
         });
 
         const handler = new ConstEnumHandler(options);
-        const result = handler.buildConstEnumList();
+        const result = handler.build();
 
         expect(result).toHaveLength(1);
         expect(result[0][1]).toContainEqual(['Mixed.A', '1']);
@@ -101,7 +100,7 @@ describe('ConstEnumHandler class', () => {
         });
 
         const handler = new ConstEnumHandler(options);
-        const result = handler.buildConstEnumList();
+        const result = handler.build();
 
         expect(result).toHaveLength(2);
 
@@ -143,7 +142,7 @@ describe('ConstEnumHandler class', () => {
         });
 
         const handler = new ConstEnumHandler(options);
-        const result = handler.buildConstEnumList();
+        const result = handler.build();
 
         expect(result).toHaveLength(1);
         // Should only parse Active and Inactive, not the comment text
@@ -170,7 +169,7 @@ describe('ConstEnumHandler class', () => {
         });
 
         const handler = new ConstEnumHandler(options);
-        const result = handler.buildConstEnumList();
+        const result = handler.build();
 
         expect(result).toHaveLength(2);
       } finally {
@@ -193,7 +192,7 @@ describe('ConstEnumHandler class', () => {
         });
 
         const handler = new ConstEnumHandler(options);
-        const result = handler.buildConstEnumList();
+        const result = handler.build();
 
         expect(result).toHaveLength(1);
         expect(result[0][1][0][0]).toContain('Colors.');
@@ -216,7 +215,7 @@ describe('ConstEnumHandler class', () => {
         });
 
         const handler = new ConstEnumHandler(options);
-        const result = handler.buildConstEnumList();
+        const result = handler.build();
 
         expect(result).toHaveLength(0);
       } finally {
@@ -239,7 +238,7 @@ describe('ConstEnumHandler class', () => {
         });
 
         const handler = new ConstEnumHandler(options);
-        const result = handler.buildConstEnumList();
+        const result = handler.build();
 
         expect(result).toHaveLength(0);
       } finally {
@@ -266,7 +265,7 @@ describe('ConstEnumHandler class', () => {
         });
 
         const handler = new ConstEnumHandler(options);
-        const result = handler.buildConstEnumList();
+        const result = handler.build();
 
         // Should find files in src/ but not in node_modules/
         expect(result.length).toBeGreaterThan(0);
