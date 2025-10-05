@@ -119,7 +119,7 @@ export class ConstEnumHandler {
         sublist.push([`${enumName}.${key}`, value]);
       }
       if (sublist.length > 0) {
-        list.push([new RegExp(`\b${enumName}\.\b`), sublist]);
+        list.push([new RegExp(`\\b${enumName}.\\b`), sublist]);
       }
     }
     return list;

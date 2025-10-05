@@ -7,7 +7,7 @@ describe('ConstEnumHandler.parseConstEnums', () => {
     const list = ConstEnumHandler.parseConstEnums(sampleEnums.simple);
     expect(list).toEqual([
       [
-        new RegExp('\bColors\.\b'),
+        new RegExp('\\bColors.\\b'),
         [
           ['Colors.Red', '0'],
           ['Colors.Green', '1'],
@@ -21,7 +21,7 @@ describe('ConstEnumHandler.parseConstEnums', () => {
     const list = ConstEnumHandler.parseConstEnums(sampleEnums.stringEnum);
     expect(list).toEqual([
       [
-        new RegExp('\bStatus\.\b'),
+        new RegExp('\\bStatus.\\b'),
         [
           ['Status.Active', '"active"'],
           ['Status.Inactive', '"inactive"'],
@@ -35,7 +35,7 @@ describe('ConstEnumHandler.parseConstEnums', () => {
     const list = ConstEnumHandler.parseConstEnums(sampleEnums.mixed);
     expect(list).toEqual([
       [
-        new RegExp('\bMixed\.\b'),
+        new RegExp('\\bMixed.\\b'),
         [
           ['Mixed.A', '1'],
           ['Mixed.B', '"string"'],
@@ -50,14 +50,14 @@ describe('ConstEnumHandler.parseConstEnums', () => {
     const list = ConstEnumHandler.parseConstEnums(sampleEnums.multiple);
     expect(list).toEqual([
       [
-        new RegExp('\bFirst\.\b'),
+        new RegExp('\\bFirst.\\b'),
         [
           ['First.A', '1'],
           ['First.B', '2'],
         ],
       ],
       [
-        new RegExp('\bSecond\.\b'),
+        new RegExp('\\bSecond.\\b'),
         [
           ['Second.X', '"x"'],
           ['Second.Y', '"y"'],
@@ -70,7 +70,7 @@ describe('ConstEnumHandler.parseConstEnums', () => {
     const list = ConstEnumHandler.parseConstEnums(sampleEnums.withComments);
     expect(list).toEqual([
       [
-        new RegExp('\bStatus\.\b'),
+        new RegExp('\\bStatus.\\b'),
         [
           ['Status.Active', '1'],
           ['Status.Inactive', '0'],
@@ -83,7 +83,7 @@ describe('ConstEnumHandler.parseConstEnums', () => {
     const list = ConstEnumHandler.parseConstEnums(sampleEnums.error);
     expect(list).toEqual([
       [
-        new RegExp('\bStatus\.\b'),
+        new RegExp('\\bStatus.\\b'),
         [
           ['Status.a', '"23"'],
           ['Status.b', '0'], // ! Enum member must have initializer, here it just goes on
@@ -96,7 +96,7 @@ describe('ConstEnumHandler.parseConstEnums', () => {
     const list = ConstEnumHandler.parseConstEnums(sampleEnums.final);
     expect(list).toEqual([
       [
-        new RegExp('\bStatus\.\b'),
+        new RegExp('\\bStatus.\\b'),
         [
           ['Status.Active', '0'],
           ['Status.BAKDB', '1'],

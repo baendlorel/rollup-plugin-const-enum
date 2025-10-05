@@ -25,25 +25,14 @@ describe('constEnum plugin integration', () => {
 
   describe('transform function', () => {
     it('should replace const enum references with literal values', () => {
-      const testEnv = createTestEnvironment('plugin-replace-' + Date.now());
-      testEnv.writeFile('enums.ts', sampleEnums.simple);
+      const plugin = constEnum({
+        files: ['tests/enums.ts'],
+      });
 
-      const originalCwd = process.cwd();
-      process.chdir(testEnv.dir);
+      const code = 'const color = Color.Red;';
+      const transformed = (plugin.transform as Function)(code);
 
-      try {
-        const plugin = constEnum({
-          files: ['enums.ts'],
-        });
-
-        const code = 'const color = Colors.Red;';
-        const result = simulateTransform(plugin, code);
-
-        expect(result).toBe('const color = 0;');
-      } finally {
-        process.chdir(originalCwd);
-        testEnv.cleanup();
-      }
+      expect(transformed).toBe('const color = 0;');
     });
 
     it('should replace multiple enum references', () => {
