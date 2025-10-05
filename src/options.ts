@@ -3,10 +3,10 @@ import { RollupConstEnumOptions } from './types/global.js';
 
 export function normalize(options: Partial<RollupConstEnumOptions> = {}) {
   const {
-    constEnumInclude = ['src/**'],
-    constEnumExclude = ['test/**', 'tests/**', 'dist/**', 'node_modules/**'],
-    include = ['src/**'],
-    exclude = ['test/**', 'tests/**', 'dist/**', 'node_modules/**'],
+    constEnumInclude = ['src/**/*.ts', 'src/**/*.tsx', 'src/**/*.mts'],
+    constEnumExclude = ['**/*.d.ts', 'test/**', 'tests/**', 'dist/**', 'node_modules/**'],
+    include = ['src/**/*.ts', 'src/**/*.tsx', 'src/**/*.mts'],
+    exclude = ['**/*.d.ts', 'test/**', 'tests/**', 'dist/**', 'node_modules/**'],
   } = Object(options) as RollupConstEnumOptions;
 
   return {

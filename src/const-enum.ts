@@ -109,10 +109,8 @@ function parseConstEnums(src: string): Map<string, string> {
 /**
  * Collect mappings from all ts files in the project
  */
-export function buildEnumReplaceOpts(
-  constEnumInclude: (id: string) => boolean
-): Map<string, string> {
-  const files = collectTsFiles(process.cwd()).filter(constEnumInclude);
+export function buildConstEnumMap(include: (id: string) => boolean): Map<string, string> {
+  const files = collectTsFiles(process.cwd()).filter(include);
 
   const combined = new Map<string, string>();
   for (let i = 0; i < files.length; i++) {
