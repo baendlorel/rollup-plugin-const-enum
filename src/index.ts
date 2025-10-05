@@ -62,7 +62,7 @@ function toRegexReplacer(entries: KeyValueEntry[]): [RegExp, Replacer] {
     map[e[0]] = e[1];
     escapedKeys.push(e[0].replace('.', '\\.'));
   }
-  const regex = new RegExp('\b(' + escapedKeys.join('|') + ')\b', 'g');
+  const regex = new RegExp('\\b(' + escapedKeys.join('|') + ')\\b', 'g');
   const replacer = (match: string) => map[match] ?? match;
   return [regex, replacer];
 }
