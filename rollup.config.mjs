@@ -63,7 +63,7 @@ const options = [
       }),
       replace(replaceOpts),
       funcMacro(),
-      void terser({
+      terser({
         format: {
           comments: false, // remove comments
         },
