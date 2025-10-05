@@ -24,6 +24,7 @@ import { ConstEnumHandler } from './const-enum.js';
 export default function constEnum(options?: Partial<RollupConstEnumOptions>) {
   const opts = normalize(options);
   const list = new ConstEnumHandler(opts).build();
+  const regList: RegexGroup[] = list.map((entry) => [entry[0], ...toRegexReplacer(entry[1])]);
 
   const plugin: Plugin = {
     name: '__NAME__',
@@ -32,17 +33,14 @@ export default function constEnum(options?: Partial<RollupConstEnumOptions>) {
         return null;
       }
 
-      const prelist = list.filter((entry) => entry[0].test(code));
+      const prelist = regList.filter((entry) => entry[0].test(code));
       if (prelist.length === 0) {
         return null;
       }
 
       let output = code;
       for (let i = 0; i < prelist.length; i++) {
-        const sublist = prelist[i][1];
-        for (let j = 0; j < sublist.length; j++) {
-          output = output.replaceAll(sublist[j][0], sublist[j][1]);
-        }
+        output = output.replace(prelist[i][1], prelist[i][2]);
       }
 
       return { code: output, map: null };
@@ -50,4 +48,21 @@ export default function constEnum(options?: Partial<RollupConstEnumOptions>) {
   };
 
   return plugin;
+}
+
+/**
+ *
+ * @param entries Here entries is already sorted and `.` is escaped in `Parser.parse`
+ */
+function toRegexReplacer(entries: KeyValueEntry[]): [RegExp, Replacer] {
+  const map: Record<string, string> = Object.create(null);
+  const escapedKeys: string[] = [];
+  for (let i = 0; i < entries.length; i++) {
+    const e = entries[i];
+    map[e[0]] = e[1];
+    escapedKeys.push(e[0].replace('.', '\\.'));
+  }
+  const regex = new RegExp('\b(' + escapedKeys.join('|') + ')\b', 'g');
+  const replacer = (match: string) => map[match] ?? match;
+  return [regex, replacer];
 }

@@ -3,11 +3,13 @@
 [![npm version](https://img.shields.io/npm/v/rollup-plugin-const-enum.svg)](https://www.npmjs.com/package/rollup-plugin-const-enum) [![npm downloads](http://img.shields.io/npm/dm/rollup-plugin-const-enum.svg)](https://npmcharts.com/compare/rollup-plugin-const-enum,token-types?start=1200&interval=30)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/59dd6795e61949fb97066ca52e6097ef)](https://www.codacy.com/app/Borewit/rollup-plugin-const-enum?utm_source=github.com&utm_medium=referral&utm_content=Borewit/rollup-plugin-const-enum&utm_campaign=Badge_Grade)
 
-A tiny Rollup plugin that inlines TypeScript `const enum` members by simple text replacement. (for example `Colors.Red` -> `0` or `Consts.Key` -> `"val"`).
+A tiny Rollup plugin that inlines TypeScript `const enum` members by simple RegExp-based text replacement. (for example `Colors.Red` -> `0` or `Consts.Key` -> `"val"`).
 
-> This plugin will replace all occurrences of `EnumName.Member` in the source files(be aware of the name collision!), then the import statements will be removed by Rollup's tree-shaking.
+> This plugin will replace all occurrences of `EnumName.Member` in the source files (be aware of the name collision!), then the import statements will be removed by Rollup's tree-shaking.
 
 For more awesome packages, check out [my homepage💛](https://baendlorel.github.io/?repoType=npm)
+
+[ChangeLog](CHANGELOG.md)
 
 ## Install
 
@@ -61,11 +63,13 @@ export default {
 };
 ```
 
-## Limitations / Important notes
+## Important notes
 
+- Scans and collects all const enums and applies them to every included file.
+  - Cannot scan a specific file and apply it to another specific file.
 - This plugin does not use any AST transformer.
-- Replacements are based on the textual key `EnumName.Member`.
-- Only supports for simple cases. Ambigous, expressions are not supported.
+- Replacements are based on the textual key `EnumName.Member` using RegExp.
+- Only supports simple cases. Ambiguous or complex expressions are not supported.
 
 ## License
 
