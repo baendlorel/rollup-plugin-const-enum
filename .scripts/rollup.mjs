@@ -1,7 +1,6 @@
 // @ts-check
-import { readFileSync, statSync, writeFileSync } from 'node:fs';
+import { readFileSync, statSync } from 'node:fs';
 import { join } from 'node:path';
-
 import { execute } from './execute.mjs';
 
 /**
@@ -15,9 +14,6 @@ import { execute } from './execute.mjs';
  */
 
 /**
- * Safely coerce a value to an array. If value is an array, return it.
- * If it's an object (but not null), return an empty array. Otherwise wrap in array.
- * NOTE: returns any[] to avoid strict generic assignment issues under @ts-check
  * @param {any} o
  * @returns {any[]}
  */
@@ -71,109 +67,31 @@ function printSize(files) {
 }
 
 /**
- * Because Node.js finds the package from current project first,
- * we need to rename the package temporarily to make it search node_modules
- */
-class Renamer {
-  /** @type {string} */
-  origin = '';
-  /** @type {any} */
-  packageJson;
-  /** @type {string} */
-  packageJsonPath;
-
-  /**
-   * @param {string} packageJsonPath
-   */
-  constructor(packageJsonPath) {
-    this.packageJsonPath = packageJsonPath;
-    this.origin = readFileSync(packageJsonPath, 'utf-8');
-    this.packageJson = JSON.parse(this.origin);
-  }
-
-  /**
-   * Real package name read from package.json content
-   * @returns {string}
-   */
-  get realName() {
-    return JSON.parse(this.origin).name;
-  }
-
-  /**
-   * Read current package.json text
-   * @returns {string}
-   */
-  read() {
-    return readFileSync(this.packageJsonPath, 'utf-8');
-  }
-
-  /**
-   * Write package.json content
-   * @param {string} content
-   * @returns {void}
-   */
-  write(content) {
-    return writeFileSync(this.packageJsonPath, content, 'utf-8');
-  }
-
-  /**
-   * Temporarily rename package.json if purpose is rollup-plugin
-   * @returns {void}
-   */
-  useTempName() {
-    if (this.packageJson.purpose !== 'rollup-plugin') {
-      console.log('Not a rollup plugin. Skip renaming package.json');
-      return;
-    }
-    this.origin = this.read();
-    const j = JSON.parse(this.origin);
-    j.name = 'kasukabe-tsumugi-temporary-name';
-    this.write(JSON.stringify(j, null, 2));
-  }
-
-  /**
-   * Restore original package.json content
-   * @returns {void}
-   */
-  restoreRealName() {
-    if (this.packageJson.purpose !== 'rollup-plugin') {
-      console.log('Not a rollup plugin. Skip restoring package.json');
-      return;
-    }
-    this.write(this.origin);
-  }
-}
-
-/**
  * Run the build script: rename package if needed, clean dist, run rollup
  * and print sizes.
  */
 async function run() {
-  const renamer = new Renamer(join(import.meta.dirname, '..', 'package.json'));
+  await execute(['rimraf', 'dist']);
 
-  process.env.KSKB_TSUMUGI_REAL_NAME = renamer.realName;
+  const cwd = join(process.cwd(), 'package.json');
+  const rawpkg = readFileSync(cwd, 'utf-8');
 
-  try {
-    renamer.useTempName();
+  /**
+   * @type {import('../package.json')}
+   */
+  const pkg = JSON.parse(rawpkg);
 
-    await execute(['rimraf', 'dist']);
+  const { name, version, purpose } = pkg;
+  console.log(`Building`, `[${purpose}]`, name, version);
 
-    const { name, version, purpose } = renamer.packageJson;
-    console.log(`Building`, `[${purpose}]`, name, version);
+  // ! Must read configs here, or nodejs will not
+  // ! be able to find the installed package of this project
+  const rollupConfig = (await import('../rollup.config.mjs')).default;
 
-    // ! Must read configs here, or nodejs will not
-    // ! be able to find the installed package of this project
-    const rollupConfig = (await import('../rollup.config.mjs')).default;
+  await execute(['rollup', '-c'], { env: { ...process.env } });
 
-    await execute(['rollup', '-c'], { env: { ...process.env } });
-
-    const files = getOutputFiles(rollupConfig);
-    printSize(files);
-  } catch (error) {
-    console.log('error', error);
-  } finally {
-    renamer.restoreRealName();
-  }
+  const files = getOutputFiles(rollupConfig);
+  printSize(files);
 }
 
 run();

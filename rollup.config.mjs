@@ -12,12 +12,12 @@ import funcMacro from 'rollup-plugin-func-macro';
 import constEnum from './node_modules/rollup-plugin-const-enum/dist/index.mjs';
 
 // custom plugins
-import { replaceLiteralOpts, replaceOpts } from './.scripts/plugins/replace.mjs';
+import { replaceLiteralOpts, replaceOpts } from './.scripts/replace.mjs';
 
 /**
  * @type {import('./package.json')}
  */
-const pkg = JSON.parse(readFileSync(path.join(import.meta.dirname, 'package.json'), 'utf-8'));
+const pkg = JSON.parse(readFileSync(path.join(process.cwd(), 'package.json'), 'utf-8'));
 
 // # common options
 
