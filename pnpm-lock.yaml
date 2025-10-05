@@ -41,6 +41,9 @@ importers:
       rollup:
         specifier: ^4.52.4
         version: 4.52.4
+      rollup-plugin-const-enum:
+        specifier: ^1.0.2
+        version: 1.0.2
       rollup-plugin-dts:
         specifier: ^6.2.3
         version: 6.2.3(rollup@4.52.4)(typescript@5.9.3)
@@ -838,6 +841,9 @@ packages:
     resolution: {integrity: sha512-9dkvaxAsk/xNXSJzMgFqqMCuFgt2+KsOFek3TMLfo8NCPfWpBmqwyNn5Y+NX56QUYfCtsyhF3ayiboEoUmJk/A==}
     engines: {node: 20 || >=22}
     hasBin: true
+
+  rollup-plugin-const-enum@1.0.2:
+    resolution: {integrity: sha512-Br5+KnR7rvGUCRGcdZh8XSE4msgumDIhSeFUURz1k2QLS/KSLlpdcM8xAcb4d3GalN9+koVcgdS9Nfyg0vl33w==}
 
   rollup-plugin-dts-merger@2.0.0:
     resolution: {integrity: sha512-f9dFuHvXPWnmhn8G052cVNBuzgEBwkZ2jBW5WWjwENj271XUbqqkvl3mHT5mjC52xpeGiLTajHpgo+wrREn3+g==}
@@ -1710,6 +1716,8 @@ snapshots:
     dependencies:
       glob: 11.0.3
       package-json-from-dist: 1.0.1
+
+  rollup-plugin-const-enum@1.0.2: {}
 
   rollup-plugin-dts-merger@2.0.0(rollup@4.52.4):
     dependencies:

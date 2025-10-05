@@ -28,34 +28,34 @@ export default {
   // ...
   plugins: [
     constEnum(), // place it near the front
-    // other plugins
+    ...
   ],
 };
 ```
 
 ## Options
 
-You can pass a partial options object to `constEnum(options)` where the main knobs are filters.
+The plugin accepts an optional options object. All options are optional and have sensible defaults.
 
-Defaults (approx):
+- `suffixes: string[]` — File suffixes to include when scanning the project for const enums. Default: `['.ts', '.tsx', '.mts', '.cts']`.
+- `files: string[]` — Explicit list of file paths (relative to `process.cwd()`) to scan for `const enum` declarations. When this array is non-empty the plugin will only use these files (each path is resolved with `path.join(process.cwd(), file)`) and will ignore recursive directory collection. Default: `[]` (scan the project tree).
+- `excludedDirectories: string[]` — Directory names (relative to the project root) to exclude from recursive scanning. Each name is resolved against `process.cwd()`. Default: `['.git', 'test', 'tests', 'dist', 'node_modules']`.
+- `skipDts: boolean` — When `true`, files ending with `.d.ts` are ignored. Default: `true`.
 
-- constEnumInclude: ['src/⋆⋆/⋆.ts', 'src/⋆⋆/⋆.tsx', 'src/⋆⋆/⋆.mts'] (files scanned to build the enum map)
-- constEnumExclude: ['⋆⋆/⋆.d.ts', 'test/⋆⋆', 'tests/⋆⋆', 'dist/⋆⋆', 'node_modules/⋆⋆']
-- include: ['src/⋆⋆/⋆.ts', 'src/⋆⋆/⋆.tsx', 'src/⋆⋆/⋆.mts'] (files transformed)
-- exclude: ['⋆⋆/⋆.d.ts', 'test/⋆⋆', 'tests/⋆⋆', 'dist/⋆⋆', 'node_modules/⋆⋆']
+Validation: `suffixes`, `files`, and `excludedDirectories` must be arrays of strings. Passing invalid types will throw a `TypeError` during plugin initialization.
 
-Example:
+### Example
 
 ```js
-import { constEnum } from 'rollup-plugin-const-enum';
+import constEnum from 'rollup-plugin-const-enum';
 
 export default {
   plugins: [
     constEnum({
-      // transform only files in lib/ instead of src/
-      include: ['lib/**/*.js'],
-      // scan a different set of source files for const enums
-      constEnumInclude: ['src/**/*.ts'],
+      suffixes: ['.ts', '.tsx'],
+      files: ['src/index.ts'],
+      excludedDirectories: ['.git', 'node_modules'],
+      skipDts: true,
     }),
   ],
 };
