@@ -1,79 +1,80 @@
-Evaluation of src/ (rollup-plugin-const-enum)
+rollup-plugin-const-enum 的 src/ 评估
 
-Summary
--------
-This plugin scans TypeScript files for `const enum` declarations using regular expressions, builds a mapping from fully-qualified enum members (e.g. `Enum.Member`) to literal values, and performs simple textual replacements during the Rollup `transform` hook using `String.prototype.replaceAll`.
+## 摘要
 
-Overall this is a small, pragmatic approach that is easy to understand and fast for many simple projects. However, the implementation has several correctness and safety limitations because it operates purely on text rather than on a JS/TS AST or tokens.
+该插件通过正则在 TypeScript 文件中查找 `const enum` 声明，构建从完全限定的枚举成员（例如 `Enum.Member`）到字面量值的映射，然后在 Rollup 的 `transform` 钩子中使用 `String.prototype.replaceAll` 做简单的文本替换。
 
-Key findings
-------------
-- Global mutation: the plugin polyfills `String.prototype.replaceAll` on module load. Mutating built-ins is risky and can cause conflicts in other code or test environments.
+总体来说，这是一个小巧且务实的实现，对于许多简单项目来说易于理解且速度较快。但由于它完全基于文本而非 JS/TS 的 AST 或词法单元，存在若干正确性和安全性方面的限制。
 
-- Regex parser brittleness: `parseConstEnums` uses regex-based parsing for `const enum` bodies. This is fragile for real-world TS source (nested braces in comments, tricky spacing, edge-case initializers, template literals inside comments, etc.).
+## 主要发现
 
-- File-set mismatch: defaults between the options (`constEnumInclude` accepts `*.mts`) and the file collector (`collectTsFiles` only collects `.ts` and `.tsx`) are inconsistent. This can result in surprising missing enums.
+- 全局改写：模块加载时会给 `String.prototype.replaceAll` 打补丁（polyfill）。修改内置对象有风险，可能与其他代码或测试环境冲突。
 
-- Replacement safety: replacements are performed by simple `replaceAll` across the whole source text. This will replace matches inside string literals, template literals, comments, or other unintended contexts. That can break code in subtle ways.
+- 正则解析脆弱：`parseConstEnums` 使用正则解析 `const enum` 内容，对于真实世界的 TS 代码（注释中嵌套大括号、复杂空白、边界情况的初始值、注释中模板字符串等）容易出错。
 
-- Initialization handling: the parser handles string literals and simple numeric literals (including hex) and implicit numeric sequencing, but other expressions are left as raw text and substituted verbatim. This may cause invalid code after replacement if the initializer contains references or complex expressions.
+- 文件集合不一致：`options` 中默认的 `constEnumInclude` 可能包含像 `*.mts` 的模式，但文件收集函数 `collectTsFiles` 只收集 `.ts` 和 `.tsx`，这会导致部分枚举未被扫描到，从而产生意外行为。
 
-- Performance: the plugin builds a replacer list and iterates through all replacers doing repeated replaceAll calls. For large maps this can be inefficient (O(n*m) behavior across replacers * file size).
+- 替换安全性：插件在整个源文本上执行简单的 `replaceAll`，这会替换字符串字面量、模板字面量或注释中的匹配，可能在不经意间破坏代码。
 
-- Plugin name placeholder: `index.ts` uses a placeholder name `__NAME__` for the Rollup plugin. Consider using the package name or a constant.
+- 初始值处理：解析器识别字符串字面量、简单数字字面量（含十六进制）与隐式数字序列，但对其他表达式仅按文本原样保留并替换，这在初始值包含引用或复杂表达式时可能产生无效代码。
 
-Concrete recommendations
-----------------------
-1) Avoid mutating built-ins
-   - Remove the global `String.prototype.replaceAll` polyfill. Use a local helper function instead, e.g. `function replaceAll(str, search, replace) { return str.split(search).join(replace); }`.
+- 性能：插件把 replacer 列表逐条遍历并反复调用 `replaceAll`，对于较大的映射这会很低效（替换次数与映射大小和文件长度成比例）。
 
-2) Improve parsing reliability
-   - Prefer TypeScript Compiler API or ts-morph for parsing `const enum` declarations and evaluating simple initializers safely. This will correctly handle comments, complex initializers, computed members, and declaration merging semantics.
-   - If you want to stay dependency-free, implement a minimal lexer to skip string/comment ranges before running the regex, or at least extend the regex logic and add robust unit tests for edge cases.
+- 插件名占位符：`index.ts` 中插件名称使用了 `__NAME__` 占位符，建议使用包名或常量。
 
-3) Make file collection consistent and configurable
-   - Either make `collectTsFiles` accept the same globs as `constEnumInclude`, or respect the filter from `normalize` directly when walking files. Consider using `fast-glob` to collect files by glob instead of recursive fs walking.
+## 具体建议
 
-4) Improve replacement safety
-   - Replace only token positions corresponding to member access or identifier usage. Approaches:
-     - Parse transformed code to AST (acorn, es-module-lexer + acorn, or TypeScript transformer) and replace only MemberExpression or Identifier nodes.
-     - Implement a simple tokenizer to skip string/template/comment ranges so textual replacements won't touch them.
-   - Add an option to enable/disable "aggressive" replacement (default: conservative behavior that avoids strings/comments).
+1. 避免修改内置对象
+   - 移除全局 `String.prototype.replaceAll` 的 polyfill。改用局部的替换辅助函数，例如：
+     `function replaceAll(str, search, replace) { return str.split(search).join(replace); }`。
 
-5) Performance improvements
-   - Build a single regular expression that matches any of the keys (sorted by length) and perform a single pass replace with a callback to map to replacement values. This will reduce repeated full-text scans.
-   - For extremely large maps consider a trie-based search or streaming replacement.
+2. 提高解析可靠性
+   - 优先使用 TypeScript Compiler API 或 ts-morph 来解析 `const enum` 并安全求值简单初始值。这样可以正确处理注释、复杂初始值、计算成员及声明合并等语义。
+   - 如果想保持无额外依赖，可以在运行正则前实现一个最小词法分析器（跳过字符串/注释范围），或显著增强正则并为边界情况增加更多单元测试。
 
-6) Better testing
-   - Add tests that cover replacements inside strings, templates, and comments, hexadecimal and negative numbers, computed members, and ensuring longer keys win over shorter ones (already covered but add more assertions).
-   - Add tests that simulate replacing in non-TS files (JS output) to ensure safety.
+3. 使文件收集一致且可配置
+   - 让 `collectTsFiles` 接受与 `constEnumInclude` 相同的 glob，或在遍历文件时直接使用 `normalize` 返回的过滤器。也可以考虑使用 `fast-glob` 按 glob 收集文件，而不是手写递归遍历。
 
-7) Packaging and ergonomics
-   - Replace `__NAME__` with the package name (readable in code or injected at build time).
-   - Add a small CLI or build script to pre-generate the enum map as JSON (optional) so it can be used outside of Rollup or in CI.
+4. 提高替换的安全性
+   - 仅替换出现在成员访问或标识符使用处的文本。可选方法：
+     - 将要替换的代码解析为 AST（acorn、es-module-lexer + acorn，或 TypeScript transformer），只替换 MemberExpression 或 Identifier 节点。
+     - 实现一个简单的分词器，先跳过字符串/模板/注释范围，再在剩余文本中做替换，避免触及字符串或注释。
+   - 添加选项以开启/关闭“激进替换”（默认保守，避免替换字符串/注释）。
 
-Suggested low-risk quick fixes (small PRs)
------------------------------------------
-- Remove global replaceAll polyfill and add a small local helper.
-- Fix extension mismatch: include `.mts`/`.cts` in `collectTsFiles` or keep defaults aligned.
-- Replace plugin name placeholder with a constant from package.json at build time or hardcode the package name.
-- Add unit tests for the tokenizer/skip-strings approach.
+5. 性能优化
+   - 构建一个能匹配所有键的单一正则（按长度排序），并用一次替换回调完成映射查找，从而减少多次全文扫描。
+   - 对于极大映射，可考虑基于 trie 的搜索或流式替换。
 
-Bigger refactors to consider
----------------------------
-- Switch to a TypeScript-driven approach (ts-morph or TypeScript Compiler API) for robust enum extraction and evaluation. This removes many edge-case bugs at the cost of a dependency and slightly more complex code.
+6. 更好的测试覆盖
+   - 增加测试，覆盖字符串/模板/注释内的替换、十六进制和负数、计算成员，以及保证长键优先匹配短键的情况（已有测试可扩充）。
+   - 增加测试以模拟在非 TS 文件（例如编译后的 JS）中的替换，以验证安全性。
 
-- Implement AST-based replacement on the transformed JavaScript (or on the TypeScript AST before emit). Replacing at the AST level avoids accidental replacements in strings and comments and is the safest approach.
+7. 打包与可用性改进
+   - 将 `__NAME__` 替换为 package.json 中的包名（在构建时注入或写死常量）。
+   - 可选地提供一个小 CLI 或构建脚本，把枚举映射预生成为 JSON（便于在 CI 或非 Rollup 场景中复用）。
 
-Checklist for follow-up
------------------------
-- [ ] Remove global polyfill
-- [ ] Align file collection globs
-- [ ] Add local replace helper or build single-RegExp replacement
-- [ ] Add tests for strings/templates/comments and computed enum members
-- [ ] Consider TypeScript AST parsing for enum extraction
-- [ ] Provide a conservative option to avoid replacements inside strings/comments
+## 低风险快速修复（可做小 PR）
 
-Notes
------
-This evaluation focuses on maintainability, correctness and safety trade-offs. The current implementation is understandable and will work well for small, well-scoped projects where developers control the codebase and can restrict the plugin's include globs. For broader adoption or use in complex codebases, moving to AST-based extraction and token-aware replacements is recommended.
+- 去掉全局 replaceAll polyfill，改用局部 helper。
+- 修正扩展名不匹配问题：在 `collectTsFiles` 中包含 `.mts`/`.cts` 或将默认 globs 对齐。
+- 将插件名占位符替换为 package.json 的包名或构建时注入的常量。
+- 添加针对分词器/跳过字符串实现的单元测试。
+
+## 较大重构建议
+
+- 切换到基于 TypeScript 的解析（ts-morph 或 TypeScript Compiler API），以获得稳健的枚举抽取和求值能力。这会增加依赖并使实现复杂些，但能消除很多边界 bug。
+
+- 在变换后或在 TypeScript AST 层面做基于 AST 的替换。基于 AST 的替换可以避免字符串与注释内的误替换，是更安全的方案。
+
+## 后续任务清单
+
+- [ ] 移除全局 polyfill
+- [ ] 对齐文件收集的 globs
+- [ ] 添加局部替换 helper 或使用单一正则替换回调
+- [ ] 增加针对字符串/模板/注释与计算成员的测试
+- [ ] 考虑使用 TypeScript AST 提取枚举
+- [ ] 提供保守模式以避免在字符串/注释中替换
+
+## 备注
+
+本评估侧重于可维护性、正确性和安全性的权衡。当前实现易于理解，适用于代码范围可控且项目规模较小的场景（可通过收窄 include globs 来降低风险）。对于更广泛或复杂的代码库，建议迁移到基于 AST 的抽取与替换方案以获得更高的安全性。

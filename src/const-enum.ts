@@ -1,29 +1,25 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-// This script scans the repository for `const enum` declarations in .ts files
-// and builds an `enumReplaceOpts` object mapping `EnumName.Member` -> literal
-// representation. The output is exported so other build scripts (like
-// .scripts/replace.mjs) can import it.
-
 /**
  * Recursively collect all .ts files under `dir`, skipping node_modules
  * and generated folders.
  * @param {string} dir
  * @returns {string[]}
  */
-function collectTsFiles(dir: string): string[] {
+function collectTsFiles(dir: string, include: (id: string) => boolean): string[] {
   const out: string[] = [];
   const entries = fs.readdirSync(dir, { withFileTypes: true });
   for (const e of entries) {
-    if (e.name === 'node_modules' || e.name === 'dist' || e.name === '.git') {
+    // if (e.name === 'node_modules' || e.name === 'dist' || e.name === '.git') {
+    if (!include(e.name)) {
       continue;
     }
 
     const full = path.join(dir, e.name);
     if (e.isDirectory()) {
-      out.push(...collectTsFiles(full));
-    } else if (e.isFile() && (full.endsWith('.ts') || full.endsWith('.tsx'))) {
+      out.push(...collectTsFiles(full, include));
+    } else if (e.isFile() && include(full)) {
       out.push(full);
     }
   }
@@ -110,7 +106,7 @@ function parseConstEnums(src: string): Map<string, string> {
  * Collect mappings from all ts files in the project
  */
 export function buildConstEnumMap(include: (id: string) => boolean): Map<string, string> {
-  const files = collectTsFiles(process.cwd()).filter(include);
+  const files = collectTsFiles(process.cwd(), include);
 
   const combined = new Map<string, string>();
   for (let i = 0; i < files.length; i++) {

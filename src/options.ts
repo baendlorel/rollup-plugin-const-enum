@@ -1,12 +1,22 @@
 import { createFilter } from '@rollup/pluginutils';
 import { RollupConstEnumOptions } from './types/global.js';
 
+const DEFAULT_EXCLUDE = [
+  '**/*.d.ts',
+  '.git/**',
+  'test/**',
+  'tests/**',
+  'dist/**',
+  'node_modules/**',
+];
+const DEFAULT_INCLUDE = ['**/*.ts', '**/*.tsx', '**/*.mts', '**/*.cts'];
+
 export function normalize(options: Partial<RollupConstEnumOptions> = {}) {
   const {
-    constEnumInclude = ['src/**/*.ts', 'src/**/*.tsx', 'src/**/*.mts'],
-    constEnumExclude = ['**/*.d.ts', 'test/**', 'tests/**', 'dist/**', 'node_modules/**'],
-    include = ['src/**/*.ts', 'src/**/*.tsx', 'src/**/*.mts'],
-    exclude = ['**/*.d.ts', 'test/**', 'tests/**', 'dist/**', 'node_modules/**'],
+    constEnumInclude = DEFAULT_INCLUDE,
+    constEnumExclude = DEFAULT_EXCLUDE,
+    include = DEFAULT_INCLUDE,
+    exclude = DEFAULT_EXCLUDE,
   } = Object(options) as RollupConstEnumOptions;
 
   return {

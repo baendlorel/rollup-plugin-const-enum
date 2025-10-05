@@ -4,11 +4,12 @@ import { RollupConstEnumOptions } from './types/global.js';
 import { normalize } from './options.js';
 import { buildConstEnumMap } from './const-enum.js';
 
-String.prototype.replaceAll =
-  String.prototype.replaceAll ||
-  function (this: string, search: string, replace: string) {
-    return this.split(search).join(replace);
-  };
+const replaceAll =
+  typeof String.prototype.replaceAll === 'function'
+    ? (s: string, search: any, replace: any) => s.replaceAll(search, replace)
+    : (s: string, search: string, replace: string) => {
+        return s.split(search).join(replace);
+      };
 
 /**
  * ## Usage
@@ -45,7 +46,7 @@ export function constEnum(options?: Partial<RollupConstEnumOptions>) {
 
       let outCode = code;
       for (let i = 0; i < replacers.length; i++) {
-        outCode = outCode.replaceAll(replacers[i][0], replacers[i][1]);
+        outCode = replaceAll(outCode, replacers[i][0], replacers[i][1]);
       }
 
       return outCode;
