@@ -2,6 +2,9 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { RollupConstEnumOptions } from './types/global.js';
 
+type KeyValueEntry = [string, string];
+type EnumName = RegExp;
+
 export class ConstEnumHandler {
   private readonly cwd = process.cwd();
   private readonly excludedDirs: string[];
@@ -43,10 +46,13 @@ export class ConstEnumHandler {
   }
 
   // todo 保存成enum的名字-> 这个enum的map 的map
-  private parseConstEnums(src: string): Map<string, string> {
-    const enumMap = new Map<string, Map<string, string>>();
+  /**
+   * @returns `[enumName,[key,value][]]`
+   */
+  private parseConstEnums(src: string): [EnumName, KeyValueEntry[]][] {
+    const list: [EnumName, KeyValueEntry[]][] = [];
+    let subList: KeyValueEntry[] = [];
 
-    const map = new Map<string, string>();
     // Remove CRLF to simplify
     const text = src.replace(/\r\n/g, '\n');
 
@@ -55,6 +61,7 @@ export class ConstEnumHandler {
       /(?:export\s+)?(?:declare\s+)?const\s+enum\s+([A-Za-z_$][\w$]*)\s*\{([\s\S]*?)\}/g;
     let m;
     while ((m = enumRe.exec(text)) !== null) {
+      subList = [];
       const enumName = m[1];
       let body = m[2];
 
@@ -69,7 +76,7 @@ export class ConstEnumHandler {
         const key = mm[1];
         let valText = mm[2] ? mm[2].trim() : undefined;
 
-        let outVal;
+        let value;
         if (valText === undefined) {
           // No initializer: follow TS numeric enum rule: start from 0 or previous+1
           if (typeof lastNumeric === 'number') {
@@ -77,8 +84,8 @@ export class ConstEnumHandler {
           } else {
             lastNumeric = 0;
           }
-          outVal = String(lastNumeric);
-          map.set(`${enumName}.${key}`, outVal);
+          value = String(lastNumeric);
+          subList.push([key, value]);
           continue;
         }
 
@@ -87,43 +94,46 @@ export class ConstEnumHandler {
         if (strMatch) {
           // Use JSON.stringify on the inner content to ensure proper escaping and double quotes
           const inner = strMatch[2];
-          outVal = JSON.stringify(inner);
+          value = JSON.stringify(inner);
           lastNumeric = null; // subsequent implicit members don't get numeric increments
-          map.set(`${enumName}.${key}`, outVal);
+          subList.push([key, value]);
           continue;
         }
 
         // Numeric or other expression - normalize simple numbers (dec/hex)
         const numMatch = valText.match(/^[-+]?(0x[0-9a-fA-F]+|\d+(?:\.\d+)?)$/);
         if (numMatch) {
-          outVal = numMatch[1] ? String(numMatch[1]) : String(valText);
+          value = numMatch[1] ? String(numMatch[1]) : String(valText);
           // parse numeric to keep track for increments
-          const parsed = Number(outVal);
+          const parsed = Number(value);
           if (Number.isNaN(parsed)) {
             lastNumeric = null;
           } else {
             lastNumeric = parsed;
           }
-          map.set(`${enumName}.${key}`, outVal);
+          subList.push([key, value]);
           continue;
         }
 
         // Fallback: keep the original text as-is (could be reference or expression)
-        outVal = valText;
+        value = valText;
         lastNumeric = null;
-        map.set(`${enumName}.${key}`, outVal);
+        subList.push([key, value]);
+      }
+      if (subList.length > 0) {
+        list.push([new RegExp(`\b${enumName}\.\b`), subList]);
       }
     }
-    return map;
+    return list;
   }
 
   /**
    * Collect mappings from all ts files in the project
    */
-  buildConstEnumMap(): Map<string, string> {
+  buildConstEnumList(): [EnumName, KeyValueEntry[]][] {
     const files = this.options.files.length > 0 ? this.filesInOption() : this.collect(this.cwd);
 
-    const combined = new Map<string, string>();
+    const list: [EnumName, KeyValueEntry[]][] = [];
     for (let i = 0; i < files.length; i++) {
       let content = null;
       try {
@@ -131,11 +141,8 @@ export class ConstEnumHandler {
       } catch {
         continue;
       }
-      const map = this.parseConstEnums(content);
-      for (const [k, v] of map.entries()) {
-        combined.set(k, v);
-      }
+      list.push(...this.parseConstEnums(content));
     }
-    return combined;
+    return list;
   }
 }
