@@ -1,10 +1,15 @@
-# 我制作了内联const enum用的插件
+# I made a plugin to inline const enums
 
-前段时间我尝试使用`tsdown`，但发现它的const enum不内联，而且已经有issue
-提出。我以为这是它自己的问题。但没想到rollup的`@rollup/plugin-typescript`也是这样。
+Some time ago I tried using `tsdown`, but discovered its const enums are not inlined and there's already an open issue about it. I thought it was a problem specific to that project — but it turns out Rollup's `@rollup/plugin-typescript` behaves the same way(Since its README.md file said so).
 
-思考后我制作了一个插件`rollup-plugin-const-enum`, [README.md](https://github.com/baendlorel/rollup-plugin-const-enum)。它使用正则表达式匹配出所有const enum的信息，再对代码中所有的const enum进行替换。为了保证轻量级，我没有使用ast解析工具，只是靠正则表达式和逐字解析做到了消除注释和扫描const enum声明。
-只要这样用就行了，我已经用在了我自己的项目中，感觉还不错😀
+So I made a plugin, `rollup-plugin-const-enum` (see the README: https://github.com/baendlorel/rollup-plugin-const-enum). It finds all const enum declarations using regular expressions and then replaces their usages throughout the code. To keep the plugin lightweight I avoided using an AST parser; instead I rely on regexes and a character-by-character scanner to strip comments and detect const enum declarations.
+
+```bash
+# installation
+pnpm i -D rollup-plugin-const-enum
+```
+
+Just use it like this — I already use it in my own projects and it works nicely 😀:
 
 ```js
 import { constEnum } from 'rollup-plugin-const-enum';
@@ -18,4 +23,4 @@ export default {
 };
 ```
 
-如果你喜欢这个插件，那我还推荐我做的另一个插件`rollup-plugin-func-macro`，这个是带AST解析器的，它会把写了`__func__`的位置全部替换成当前代码所处在的函数名字。
+If you like this plugin, you might also be interested in another plugin I wrote called `rollup-plugin-func-macro`. That one uses an AST parser and replaces every `__func__` occurrence with the name of the function the code is currently inside.
