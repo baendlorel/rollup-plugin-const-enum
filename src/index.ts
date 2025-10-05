@@ -14,7 +14,7 @@ const replaceAll =
 /**
  * ## Usage
  * This is a simple plugin with no ast parsers.
- * It uses regex to detect const enum declarations, and replace them by `String.prototype.replaceAll`(polyfill included).
+ * Uses regex to detect const enum declarations, replace them by `String.prototype.replaceAll`(polyfill included).
  *
  * ```ts
  * export default {
@@ -28,7 +28,7 @@ const replaceAll =
  *
  * __PKG_INFO__
  */
-export function constEnum(options?: Partial<RollupConstEnumOptions>) {
+export default function constEnum(options?: Partial<RollupConstEnumOptions>) {
   const opts = normalize(options);
   const list = new ConstEnumHandler(opts).buildConstEnumList();
 
@@ -52,7 +52,7 @@ export function constEnum(options?: Partial<RollupConstEnumOptions>) {
         }
       }
 
-      return output;
+      return { code: output, map: null };
     },
   };
 
