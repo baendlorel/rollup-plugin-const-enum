@@ -23,9 +23,9 @@ describe('ConstEnumHandler class', () => {
         expect(result).toHaveLength(1);
         expect(result[0][0]).toBeInstanceOf(RegExp);
         expect(result[0][1]).toEqual([
-          ['Colors.Red', '0'],
           ['Colors.Green', '1'],
           ['Colors.Blue', '2'],
+          ['Colors.Red', '0'],
         ]);
       } finally {
         process.chdir(originalCwd);
@@ -50,9 +50,9 @@ describe('ConstEnumHandler class', () => {
 
         expect(result).toHaveLength(1);
         expect(result[0][1]).toEqual([
-          ['Status.Active', '"active"'],
           ['Status.Inactive', '"inactive"'],
           ['Status.Pending', '"pending"'],
+          ['Status.Active', '"active"'],
         ]);
       } finally {
         process.chdir(originalCwd);

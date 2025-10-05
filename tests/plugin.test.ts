@@ -1,6 +1,5 @@
 import { expect, describe, it } from 'vitest';
-import { constEnum } from '../src/index.js';
-import { createTestEnvironment, sampleEnums, simulateTransform } from './helpers.js';
+import constEnum from '../src/index.js';
 
 describe('constEnum plugin integration', () => {
   describe('plugin creation', () => {
@@ -30,7 +29,7 @@ describe('constEnum plugin integration', () => {
       const code = 'const color = Color.Red;';
       const result = (plugin.transform as Function)(code);
 
-      expect(result).toBe('const color = 0;');
+      expect(result.code).toBe('const color = 0;');
     });
 
     it('should replace multiple enum references', () => {
@@ -41,9 +40,9 @@ describe('constEnum plugin integration', () => {
                       const blue = Color.Blue; `;
       const result = (plugin.transform as Function)(code);
 
-      expect(result).toContain('const red = 0;');
-      expect(result).toContain('const green = 1;');
-      expect(result).toContain('const blue = 2;');
+      expect(result.code).toContain('const red = 0;');
+      expect(result.code).toContain('const green = 1;');
+      expect(result.code).toContain('const blue = 2;');
     });
 
     it('should replace string enum values', () => {
@@ -52,7 +51,7 @@ describe('constEnum plugin integration', () => {
       const code = 'const status = Status.Active;';
       const result = (plugin.transform as Function)(code);
 
-      expect(result).toBe('const status = "active";');
+      expect(result.code).toBe('const status = "active";');
     });
 
     it('should handle enum references in expressions', () => {
@@ -61,7 +60,7 @@ describe('constEnum plugin integration', () => {
       const code = 'const sum = Color.Red + Color.Blue;';
       const result = (plugin.transform as Function)(code);
 
-      expect(result).toBe('const sum = 0 + 2;');
+      expect(result.code).toBe('const sum = 0 + 2;');
     });
 
     it('should handle multiple enums from different files', () => {
@@ -71,8 +70,8 @@ describe('constEnum plugin integration', () => {
                     const status = Status.Active;`;
       const result = (plugin.transform as Function)(code);
 
-      expect(result).toContain('const color = 0;');
-      expect(result).toContain('const status = "active";');
+      expect(result.code).toContain('const color = 0;');
+      expect(result.code).toContain('const status = "active";');
     });
 
     it('should return null when no replacements are needed', () => {
@@ -105,10 +104,10 @@ describe('constEnum plugin integration', () => {
                     }`;
       const result = (plugin.transform as Function)(code);
 
-      expect(result).toContain('const a = 1;');
-      expect(result).toContain('const b = 2;');
-      expect(result).toContain('const x = "x";');
-      expect(result).toContain('const y = "y";');
+      expect(result.code).toContain('const a = 1;');
+      expect(result.code).toContain('const b = 2;');
+      expect(result.code).toContain('const x = "x";');
+      expect(result.code).toContain('const y = "y";');
     });
 
     it('should not replace partial matches', () => {
@@ -123,9 +122,9 @@ const x = Color.Red;
       const result = (plugin.transform as Function)(code);
 
       // Only Color.Red should be replaced
-      expect(result).toContain('const MyColor = { Red: 1 };');
-      expect(result).toContain('const ColorRed = 2;');
-      expect(result).toContain('const x = 0;');
+      expect(result.code).toContain('const MyColor = { Red: 1 };');
+      expect(result.code).toContain('const ColorRed = 2;');
+      expect(result.code).toContain('const x = 0;');
     });
   });
 
@@ -136,8 +135,8 @@ const x = Color.Red;
       const code = 'const flag = Flags.A | Flags.B;';
       const result = (plugin.transform as Function)(code);
 
-      expect(result).toContain('0x01');
-      expect(result).toContain('0x02');
+      expect(result.code).toContain('0x01');
+      expect(result.code).toContain('0x02');
     });
 
     it('should handle auto-increment after numeric values', () => {
@@ -152,11 +151,11 @@ const e = Numbers.E;
 `;
       const result = (plugin.transform as Function)(code);
 
-      expect(result).toContain('const a = 10;');
-      expect(result).toContain('const b = 11;');
-      expect(result).toContain('const c = 12;');
-      expect(result).toContain('const d = 20;');
-      expect(result).toContain('const e = 21;');
+      expect(result.code).toContain('const a = 10;');
+      expect(result.code).toContain('const b = 11;');
+      expect(result.code).toContain('const c = 12;');
+      expect(result.code).toContain('const d = 20;');
+      expect(result.code).toContain('const e = 21;');
     });
   });
 });

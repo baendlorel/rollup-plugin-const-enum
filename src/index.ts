@@ -4,13 +4,6 @@ import { RollupConstEnumOptions } from './types/global.js';
 import { normalize } from './options.js';
 import { ConstEnumHandler } from './const-enum.js';
 
-const replaceAll =
-  typeof String.prototype.replaceAll === 'function'
-    ? (s: string, search: any, replace: any) => s.replaceAll(search, replace)
-    : (s: string, search: string, replace: string) => {
-        return s.split(search).join(replace);
-      };
-
 /**
  * ## Usage
  * This is a simple plugin with no ast parsers.
@@ -48,7 +41,7 @@ export default function constEnum(options?: Partial<RollupConstEnumOptions>) {
       for (let i = 0; i < prelist.length; i++) {
         const sublist = prelist[i][1];
         for (let j = 0; j < sublist.length; j++) {
-          output = replaceAll(output, sublist[j][0], sublist[j][1]);
+          output = output.replaceAll(sublist[j][0], sublist[j][1]);
         }
       }
 

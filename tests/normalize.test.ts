@@ -35,13 +35,13 @@ describe('normalize function', () => {
 
     it('should throw error for invalid suffixes (not array)', () => {
       expect(() => normalize({ suffixes: 'invalid' as any })).toThrow(
-        "Invalid option 'suffixes': expected an array of strings."
+        'Expected suffixes to be string[]'
       );
     });
 
     it('should throw error for invalid suffixes (array with non-strings)', () => {
       expect(() => normalize({ suffixes: ['.ts', 123, '.tsx'] as any })).toThrow(
-        "Invalid option 'suffixes': expected an array of strings."
+        'Expected suffixes to be string[]'
       );
     });
   });
@@ -54,14 +54,12 @@ describe('normalize function', () => {
     });
 
     it('should throw error for invalid files (not array)', () => {
-      expect(() => normalize({ files: 'invalid' as any })).toThrow(
-        "Invalid option 'files': expected an array of strings."
-      );
+      expect(() => normalize({ files: 'invalid' as any })).toThrow('Expected files to be string[]');
     });
 
     it('should throw error for invalid files (array with non-strings)', () => {
       expect(() => normalize({ files: ['valid.ts', null] as any })).toThrow(
-        "Invalid option 'files': expected an array of strings."
+        'Expected files to be string[]'
       );
     });
   });
@@ -75,13 +73,13 @@ describe('normalize function', () => {
 
     it('should throw error for invalid excludedDirectories (not array)', () => {
       expect(() => normalize({ excludedDirectories: 'invalid' as any })).toThrow(
-        "Invalid option 'excludedDirectories': expected an array of strings."
+        'Expected excludedDirectories to be string[]'
       );
     });
 
     it('should throw error for invalid excludedDirectories (array with non-strings)', () => {
       expect(() => normalize({ excludedDirectories: ['node_modules', {}] as any })).toThrow(
-        "Invalid option 'excludedDirectories': expected an array of strings."
+        'Expected excludedDirectories to be string[]'
       );
     });
   });

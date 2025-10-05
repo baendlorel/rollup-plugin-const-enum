@@ -9,9 +9,10 @@ describe('ConstEnumHandler.parseConstEnums', () => {
       [
         new RegExp('\\bColors.\\b'),
         [
-          ['Colors.Red', '0'],
+          // # sorted by key length descending
           ['Colors.Green', '1'],
           ['Colors.Blue', '2'],
+          ['Colors.Red', '0'],
         ],
       ],
     ]);
@@ -23,9 +24,9 @@ describe('ConstEnumHandler.parseConstEnums', () => {
       [
         new RegExp('\\bStatus.\\b'),
         [
-          ['Status.Active', '"active"'],
           ['Status.Inactive', '"inactive"'],
           ['Status.Pending', '"pending"'],
+          ['Status.Active', '"active"'],
         ],
       ],
     ]);
@@ -72,8 +73,8 @@ describe('ConstEnumHandler.parseConstEnums', () => {
       [
         new RegExp('\\bStatus.\\b'),
         [
-          ['Status.Active', '1'],
           ['Status.Inactive', '0'],
+          ['Status.Active', '1'],
         ],
       ],
     ]);
@@ -98,10 +99,10 @@ describe('ConstEnumHandler.parseConstEnums', () => {
       [
         new RegExp('\\bStatus.\\b'),
         [
+          ['Status.Inactive', '"23"'],
           ['Status.Active', '0'],
           ['Status.BAKDB', '1'],
           ['Status.KDJF', '2'],
-          ['Status.Inactive', '"23"'],
         ],
       ],
     ]);

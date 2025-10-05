@@ -1,10 +1,9 @@
 import { RollupConstEnumOptions } from './types/global.js';
 
 const expectStringArray = (value: any, name: string) => {
-  if (Array.isArray(value) && value.every((v) => typeof v === 'string')) {
-    return;
+  if (!Array.isArray(value) || value.some((v) => typeof v !== 'string')) {
+    throw new TypeError(`Expected ${name} to be string[].`);
   }
-  throw new TypeError(`Expected ${name} to be string[].`);
 };
 
 export function normalize(options: Partial<RollupConstEnumOptions> = {}) {

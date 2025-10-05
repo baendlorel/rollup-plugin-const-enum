@@ -43,9 +43,6 @@ export class ConstEnumHandler {
     return out;
   }
 
-  /**
-   * @returns `[enumName,[key,value][]]`
-   */
   static parse(src: string): [EnumName, KeyValueEntry[]][] {
     const list: [EnumName, KeyValueEntry[]][] = [];
     let sublist: KeyValueEntry[] = [];
@@ -133,13 +130,10 @@ export class ConstEnumHandler {
 
     const list: [EnumName, KeyValueEntry[]][] = [];
     for (let i = 0; i < files.length; i++) {
-      let content = null;
       try {
-        content = readFileSync(files[i], 'utf8');
-      } catch {
-        continue;
-      }
-      list.push(...ConstEnumHandler.parse(content));
+        const content = readFileSync(files[i], 'utf8');
+        list.push(...ConstEnumHandler.parse(content));
+      } catch {}
     }
     return list;
   }
