@@ -5,6 +5,8 @@
 
 A tiny Rollup plugin that inlines TypeScript `const enum` members by simple text replacement. (for example `Colors.Red` -> `0` or `Consts.Key` -> `"val"`).
 
+> This plugin will replace all occurrences of `EnumName.Member` in the source files(be aware of the name collision!), then the import statements will be removed by Rollup's tree-shaking.
+
 For more awesome packages, check out [my homepage💛](https://baendlorel.github.io/?repoType=npm)
 
 ## Install
