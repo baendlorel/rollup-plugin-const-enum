@@ -78,4 +78,19 @@ describe('ConstEnumHandler.parseConstEnums', () => {
       ],
     ]);
   });
+
+  it('final', () => {
+    const list = ConstEnumHandler.parseConstEnums(sampleEnums.final);
+    expect(list).toEqual([
+      [
+        new RegExp('\bStatus\.\b'),
+        [
+          ['Status.Active', '0'],
+          ['Status.BAKDB', '1'],
+          ['Status.KDJF', '2'],
+          ['Status.Inactive', '3'],
+        ],
+      ],
+    ]);
+  });
 });

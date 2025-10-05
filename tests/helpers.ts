@@ -118,6 +118,12 @@ const enum Status {
   Inactive = 0
 }
 `,
+  final: `
+const enum Status {/* This is a comment */Active,BAKDB,/* '''43This is a comment */KDJF
+  // Another comment
+  Inactive
+}
+`,
 };
 
 /**
