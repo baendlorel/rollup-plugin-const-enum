@@ -43,7 +43,6 @@ export class ConstEnumHandler {
     return out;
   }
 
-  // todo 保存成enum的名字-> 这个enum的map 的map
   /**
    * @returns `[enumName,[key,value][]]`
    */
@@ -119,6 +118,7 @@ export class ConstEnumHandler {
         sublist.push([`${enumName}.${key}`, value]);
       }
       if (sublist.length > 0) {
+        sublist.sort((a, b) => b[0].length - a[0].length); // longer keys first for replacement
         list.push([new RegExp(`\\b${enumName}.\\b`), sublist]);
       }
     }
