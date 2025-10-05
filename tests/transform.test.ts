@@ -79,6 +79,19 @@ describe('ConstEnumHandler.parseConstEnums', () => {
     ]);
   });
 
+  it('error', () => {
+    const list = ConstEnumHandler.parseConstEnums(sampleEnums.error);
+    expect(list).toEqual([
+      [
+        new RegExp('\bStatus\.\b'),
+        [
+          ['Status.a', '"23"'],
+          ['Status.b', '0'], // ! Enum member must have initializer, here it just goes on
+        ],
+      ],
+    ]);
+  });
+
   it('final', () => {
     const list = ConstEnumHandler.parseConstEnums(sampleEnums.final);
     expect(list).toEqual([
@@ -88,7 +101,7 @@ describe('ConstEnumHandler.parseConstEnums', () => {
           ['Status.Active', '0'],
           ['Status.BAKDB', '1'],
           ['Status.KDJF', '2'],
-          ['Status.Inactive', '3'],
+          ['Status.Inactive', '"23"'],
         ],
       ],
     ]);

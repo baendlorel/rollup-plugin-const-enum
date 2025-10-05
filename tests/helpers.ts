@@ -82,23 +82,20 @@ const enum Colors {
   Red = 0,
   Green = 1,
   Blue = 2
-}
-`,
+}`,
   stringEnum: `
 export const enum Status {
   Active = "active",
   Inactive = "inactive",
   Pending = "pending"
-}
-`,
+}`,
   mixed: `
 declare const enum Mixed {
   A = 1,
   B = "string",
   C = 0x10,
   D
-}
-`,
+}`,
   multiple: `
 const enum First {
   A = 1,
@@ -108,22 +105,23 @@ const enum First {
 const enum Second {
   X = "x",
   Y = "y"
-}
-`,
+}`,
   withComments: `
 const enum Status {
   /* This is a comment */
   Active = 1,
   // Another comment
   Inactive = 0
-}
-`,
+}`,
   final: `
-const enum Status {/* This is a comment */Active,BAKDB,/* '''43This is a comment */KDJF
+const enum Status {/* This is a comment */Active,BAKDB,/* '''43This is a comment */KDJF,
   // Another comment
-  Inactive
-}
-`,
+  Inactive = '23'
+}`,
+  error: `
+const enum Status {
+  a = '23',b
+}`,
 };
 
 /**
@@ -132,12 +130,10 @@ const enum Status {/* This is a comment */Active,BAKDB,/* '''43This is a comment
 export const sampleUsage = {
   simple: `
 const color = Colors.Red;
-const active = Status.Active;
-`,
+const active = Status.Active;`,
   expression: `
 const value = Colors.Red + Colors.Blue;
-const text = "Status: " + Status.Active;
-`,
+const text = "Status: " + Status.Active;`,
   complex: `
 function getColor(type: string) {
   if (type === 'primary') {
@@ -146,6 +142,5 @@ function getColor(type: string) {
   return Colors.Blue;
 }
 
-const statuses = [Status.Active, Status.Inactive];
-`,
+const statuses = [Status.Active, Status.Inactive];`,
 };
