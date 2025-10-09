@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.2]
+
+- Share the internal replacement list for users. Accessed by `constEnum().__kskb_replacement_list`
+
+## [1.1.1]
+
+- Add link to other plugins
+
 ## [1.1.0]
 
 ### Changed

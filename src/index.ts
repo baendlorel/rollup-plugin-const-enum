@@ -1,5 +1,5 @@
 import { Plugin } from 'rollup';
-import { RollupConstEnumOptions } from './types/global.js';
+import { ConstEnumReplacementList, RollupConstEnumOptions } from './types/global.js';
 
 import { normalize } from './options.js';
 import { ConstEnumHandler } from './const-enum.js';
@@ -26,8 +26,9 @@ export default function constEnum(options?: Partial<RollupConstEnumOptions>) {
   const list = new ConstEnumHandler(opts).build();
   const regList: RegexGroup[] = list.map((entry) => [entry[0], ...toRegexReplacer(entry[1])]);
 
-  const plugin: Plugin = {
+  const plugin: Plugin & ConstEnumReplacementList = {
     name: '__NAME__',
+    __kskb_replacement_list: list,
     transform(code, _id) {
       if (list.length === 0) {
         return null;

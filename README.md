@@ -77,6 +77,15 @@ export default {
 - Replacements are based on the textual key `EnumName.Member` using RegExp.
 - Only supports simple cases. Ambiguous or complex expressions are not supported.
 
+## Advanced Usage
+
+You can access the internal replacement list (for advanced use cases) via the plugin instance:
+
+```ts
+const plugin = constEnum();
+const list = plugin.__kskb_replacement_list; // [ [RegExp, [ [key, value], ... ] ], ... ]
+```
+
 ## License
 
 MIT

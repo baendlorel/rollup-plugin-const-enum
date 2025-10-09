@@ -27,3 +27,12 @@ export interface RollupConstEnumOptions {
    */
   excludedDirectories: string[];
 }
+
+type KeyValueEntries = [string, string][];
+
+export interface ConstEnumReplacementList {
+  /**
+   * This list is the replacement used internally. free to use, but **do not modify it**.
+   */
+  __kskb_replacement_list: [RegExp, KeyValueEntries][];
+}
