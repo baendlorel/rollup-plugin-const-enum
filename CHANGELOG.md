@@ -1,8 +1,9 @@
 # Changelog
 
-## [1.1.3]
+## [1.1.3] [1.1.4]
 
 - Fix issue the `__kskb_replacement_list` property is mangled by terser.
+- Fix the description in comments
 
 ## [1.1.2]
 

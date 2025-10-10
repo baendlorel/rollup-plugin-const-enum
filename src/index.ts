@@ -7,7 +7,7 @@ import { ConstEnumHandler } from './const-enum.js';
 /**
  * ## Usage
  * This is a simple plugin with no ast parsers.
- * Uses regex to detect const enum declarations, replace them by `String.prototype.replaceAll`(polyfill included).
+ * Uses regex to detect const enum declarations and replace them.
  *
  * ```ts
  * export default {
