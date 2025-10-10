@@ -77,7 +77,7 @@ const options = [
         },
         mangle: {
           properties: {
-            regex: /^_/, // only mangle properties starting with '_'
+            regex: /^_(?!_kskb_replacement_list$).*$/, // only mangle properties starting with '_'
           },
         },
       }),

@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.1.3]
+
+- Fix issue the `__kskb_replacement_list` property is mangled by terser.
+
 ## [1.1.2]
 
 - Share the internal replacement list for users. Accessed by `constEnum().__kskb_replacement_list`
